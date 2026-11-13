@@ -64,6 +64,19 @@ class TestConnectionTest:
         assert len(root.findall(".//item")) >= 1
         main_module.orion_client.search_streams.assert_not_called()
 
+    async def test_empty_tv_category_search_returns_tv_validation_result(
+        self, test_client, reset_globals
+    ):
+        """An empty Sonarr-category validation search must emit a TV result."""
+        resp = await test_client.get("/api?t=search&cat=5000")
+        assert resp.status_code == 200
+        attrs = _parse_xml(resp.text).findall(
+            ".//{http://torznab.com/schemas/2015/feed}attr"
+        )
+        category = next(attr.get("value") for attr in attrs if attr.get("name") == "category")
+        assert category is not None and 5000 <= int(category) < 6000
+        main_module.orion_client.search_streams.assert_not_called()
+
 
 class TestNotFoundHandling:
     async def test_not_found_treated_as_empty_results(

@@ -391,6 +391,10 @@ async def search_orionoid(
                         "video": {"quality": "1080"},
                         "audio": {},
                         "meta": {},
+                        # Prowlarr uses an empty search with a category to
+                        # validate an indexer. Preserve the requested media
+                        # type so Sonarr's TV-category validation succeeds.
+                        "_media_type": "show" if media_type == "show" else "movie",
                         "links": ["magnet:?xt=urn:btih:" + "0" * 40],
                         "stream": {"type": "torrent", "seeds": 1},
                         "time": {"added": int(time.time())},
